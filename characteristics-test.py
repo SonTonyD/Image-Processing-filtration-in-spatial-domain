@@ -43,9 +43,15 @@ class TestCharacteristics(unittest.TestCase):
 
     def test_standardizedMoment(self):
         image_matrix = np.array([[5,4],[1,4]])
-        result = Task2.cvarcoi(image_matrix)
+        result = Task2.standardizedMoment(image_matrix, 3)
 
-        self.assertEqual(result, 0.5270462766947299)
+        self.assertEqual(result, -2.9375)
+
+    def test_casyco(self):
+        image_matrix = np.array([[5,4],[1,4]])
+        result = Task2.casyco(image_matrix)
+
+        self.assertEqual(result, -0.8703703703703703)
 
 if __name__ == '__main__':
     unittest.main()

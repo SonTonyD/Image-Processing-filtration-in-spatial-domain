@@ -34,6 +34,7 @@ def cstdev(image_matrix):
 def cvarcoi(image_matrix):
     return cstdev(image_matrix)/cmean(image_matrix)
 
+#casyco
 def countPixel(image_matrix):
     width, height = image_matrix.shape[0], image_matrix.shape[1]
     countTable = np.zeros(256)
@@ -51,6 +52,10 @@ def standardizedMoment(image_matrix, k):
         for j in range(height):
             sum += math.pow(image_matrix[i,j] - mean, k) * ( countTable[image_matrix[i,j]]/(width*height) )
     return sum
+
+def casyco(image_matrix):
+    return standardizedMoment(image_matrix,3) / math.pow(cstdev(image_matrix),3)
+
 
 @ImageProcessing.command()
 @click.option('--name', default="lenac.bmp", help='path of the image. Example:--name="./Images/lenac.bmp"  ')
