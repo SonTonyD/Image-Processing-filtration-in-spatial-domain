@@ -2,12 +2,9 @@ from PIL import Image
 import numpy as np
 import click
 import math
+import matplotlib.pyplot as plt
 
-image_directory = "./images/"
 
-@click.group()
-def ImageProcessing():
-    pass
 
 def cmean(image_matrix):
     width, height = image_matrix.shape[0], image_matrix.shape[1]
@@ -56,13 +53,45 @@ def standardizedMoment(image_matrix, k):
 def casyco(image_matrix):
     return standardizedMoment(image_matrix,3) / math.pow(cstdev(image_matrix),3)
 
+def displayHistogram(image_matrix, name):
+    image_matrix = image_matrix.flatten()
+    plt.hist(image_matrix, color = "grey", bins=256)
 
-@ImageProcessing.command()
-@click.option('--name', default="lenac.bmp", help='path of the image. Example:--name="./Images/lenac.bmp"  ')
-@click.option('--cmean', default=False, help='Can be true or false. Compute the mean value of all the pixels in the image')
-@click.option('--cvariance', default=False, help='Can be true or false. Compute the variance value of all the pixels in the image')
-def characteristics(name, cmean, cvariance) :
-    img = Image.open(image_directory+name)
-    image_matrix = np.array(img)
+    parsedName = nameParsing(name)
+    
+    plt.xlabel("Pixel Intensity")
+    plt.ylabel("Number of Pixels")
+    plt.title("Histogram of "+ parsedName)
+    plt.savefig('A_hist_'+ parsedName +'.png')
+    plt.show()
+
+def nameParsing(name):
+    newName = name.split("\\")[1]
+    newName = newName.split(".")[0]
+    return newName
 
     
+
+
+@click.command()
+@click.option('--name', default="lena.bmp", help='path of the image. Example:--name="./Images/lenac.bmp"  ')
+@click.option('--cmean', default=False, help='Can be true or false. Compute the mean value of all the pixels in the image')
+@click.option('--cvariance', default=False, help='Can be true or false. Compute the variance value of all the pixels in the image')
+@click.option('--histogram', is_flag=True, help='Save the histogram of the given image')
+def operation(name, cmean, cvariance, histogram) :
+    img = Image.open(name)
+    image_matrix = np.array(img)
+
+    if histogram:
+        displayHistogram(image_matrix, name)
+
+
+
+
+
+    
+
+if __name__ == '__main__':
+    operation()
+    
+
