@@ -7,25 +7,25 @@ class TestCharacteristics(unittest.TestCase):
 
     def test_cmean(self):
         image_matrix = np.array([[5,2],[1,4]])
-        result = Task2.cmean(image_matrix)
+        result = Task2.cmean_function(image_matrix)
 
         self.assertEqual(result, 3)
 
     def test_cvariance(self):
         image_matrix = np.array([[5,2],[1,4]])
-        result = Task2.cvariance(image_matrix)
+        result = Task2.cvariance_function(image_matrix)
 
         self.assertEqual(result, 2.5)
 
     def test_cstdev(self):
         image_matrix = np.array([[5,2],[1,4]])
-        result = Task2.cstdev(image_matrix)
+        result = Task2.cstdev_function(image_matrix)
 
         self.assertEqual(result, 1.5811388300841898)
 
     def test_cvarcoi(self):
         image_matrix = np.array([[5,2],[1,4]])
-        result = Task2.cvarcoi(image_matrix)
+        result = Task2.cvarcoi_function(image_matrix)
 
         self.assertEqual(result, 0.5270462766947299)
     
@@ -49,7 +49,7 @@ class TestCharacteristics(unittest.TestCase):
 
     def test_casyco(self):
         image_matrix = np.array([[5,4],[1,4]])
-        result = Task2.casyco(image_matrix)
+        result = Task2.casyco_function(image_matrix)
 
         self.assertEqual(result, -0.8703703703703703)
 
