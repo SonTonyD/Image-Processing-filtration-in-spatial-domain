@@ -35,7 +35,7 @@ def cstdev_function(image_matrix):
 def cvarcoi_function(image_matrix):
     return cstdev_function(image_matrix)/cmean_function(image_matrix)
 
-#casyco
+#histogram values (not normalized)
 def countPixel(image_matrix):
     width, height = image_matrix.shape[0], image_matrix.shape[1]
     countTable = np.zeros(256)
@@ -44,6 +44,7 @@ def countPixel(image_matrix):
             countTable[image_matrix[i,j]] += 1
     return countTable
 
+#k-th central moment
 def standardizedMoment(image_matrix, k):
     width, height = image_matrix.shape[0], image_matrix.shape[1]
     sum = 0
@@ -105,8 +106,84 @@ def invokeHistogram(image_matrix, name):
     else:
         displayHistogram(image_matrix, name, "grey")
 
+def cflaco_function(image_matrix):
+    return standardizedMoment(image_matrix,4) / math.pow(cstdev_function(image_matrix),4)
 
+def squareMatrix(image_matrix):
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+
+    for i in range(width):
+        for j in range(height):
+            image_matrix[i,j] = math.pow(image_matrix[i,j], 2)
+    return image_matrix
+
+def cvarcoii_function(image_matrix):
+    tmp_image_matrix = image_matrix
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    squared_matrix = squareMatrix(tmp_image_matrix)
+    return cmean_function(squared_matrix)/math.pow(width*height , 2)
+
+def normalizedCountPixel(countTable, image_matrix):
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    for i in range(len(countTable)):
+        countTable[i] = countTable[i]/(width*height)
+    return countTable
+
+def centropy_function(image_matrix):
+    countTable = countPixel(image_matrix)
+    normalizedHist = normalizedCountPixel(countTable, image_matrix)
+
+    sum = 0
+    for i in range(len(normalizedHist)):
+        if normalizedHist[i] != 0:
+            sum += normalizedHist[i]*math.log2(normalizedHist[i])
     
+    entropy_value = -1*sum
+    return entropy_value
+
+def hhyper_function(image_matrix, hhyper):
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    gmin, gmax = hhyper
+    countTable = countPixel(image_matrix)
+    #normalizedHist = normalizedCountPixel(countTable, image_matrix)
+
+    result_hist = np.zeros(256)
+    exponent = 0
+
+    for i in range(256):
+        exponent = 0
+        for j in range(i):
+            exponent += countTable[j]
+        exponent = exponent/(width*height)
+        result_hist[i] = math.pow(gmin*(gmax/gmin), exponent)
+    
+    return result_hist
+
+def replacePixel(image_matrix, lookup_table):
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    result_matrix = np.copy(image_matrix)
+    for i in range(width):
+        for j in range(height):
+            for k in range(256):
+                if image_matrix[i,j] == k :
+                    result_matrix[i,j] = round(lookup_table[k])
+    return result_matrix
+            
+
+def convolutionOperation(image_matrix, kernel):
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    copy_image_matrix = image_matrix
+
+    for i in range(1, width-1):
+        for j in range(1, height-1):
+            #For a 3x3 kernel
+            sum_kernel, weighted_sum = 0, 0
+            for k in range(-1,2):
+                for l in range(-1,2):
+                    sum_kernel += kernel[k+1,l+1]
+                    weighted_sum += image_matrix[i+k,j+l]*kernel[k+1,l+1]
+            copy_image_matrix[i,j] = weighted_sum/sum_kernel
+    return copy_image_matrix
 
 
 @click.command()
@@ -116,21 +193,44 @@ def invokeHistogram(image_matrix, name):
 @click.option('--histogram', is_flag=True, help='Save the histogram of the given image')
 @click.option('--cstdev', is_flag=True, help='Compute the standard deviation')
 @click.option('--cvarcoi', is_flag=True, help='Compute the variance coefficient')
-@click.option('--casyco', is_flag=True, help='Compute the asymetry coefficient')
-def operation(name, cmean, cvariance, histogram, cstdev, cvarcoi, casyco) :
+@click.option('--cvarcoii', is_flag=True, help='Compute the variance coefficient II')
+@click.option('--casyco', is_flag=True, help='Compute the asymetry coefficient (Skewness)')
+@click.option('--cflaco', is_flag=True, help='Compute the flattening coefficient (Kurtosis)')
+@click.option('--centropy', is_flag=True, help='Compute the entropy of the image')
+@click.option('--hhyper', nargs=2, type=int, help='Histogram modification with hyperbolic final probability density function; 2 parameters: minBrightness maxBrightness')
+@click.option('--slineid', is_flag=True, help='perform a line identification operation')
+def operation(name, cmean, cvariance, histogram, cstdev, cvarcoi, casyco, cflaco, cvarcoii, centropy, hhyper, slineid) :
     img = Image.open(name)
     image_matrix = np.array(img)
 
-    function_names = ["cmean", "cvariance", "cstdev", "cvarcoi", "casyco"]
-    functions = [cmean_function, cvariance_function, cstdev_function, cvarcoi_function, casyco_function]
-    function_flags = [cmean, cvariance, cstdev, cvarcoi, casyco]
-
-    for i in range(len(functions)):
-        if function_flags[i]:
-            invokeFunction(function_names[i], functions[i], image_matrix)
+    function_names = ["cmean", "cvariance", "cstdev", "cvarcoi", "casyco", "cflaco", "cvarcoii", "centropy"]
+    functions = [cmean_function, cvariance_function, cstdev_function, cvarcoi_function, casyco_function, cflaco_function, cvarcoii_function, centropy_function]
+    function_flags = [cmean, cvariance, cstdev, cvarcoi, casyco, cflaco, cvarcoii, centropy]
 
     if histogram:
         invokeHistogram(image_matrix, name)
+
+    for i in range(len(functions)):
+        if function_flags[i]: 
+            invokeFunction(function_names[i], functions[i], image_matrix)
+
+    if hhyper != None:
+        lookup_table = hhyper_function(image_matrix, hhyper)
+        new_matrix = replacePixel(image_matrix, lookup_table)
+        Image.fromarray(new_matrix).save("./images/"+name+"hhyper"+".bmp")
+        Image.fromarray(new_matrix).show("New Image")
+        invokeHistogram(new_matrix, name)
+
+
+'''
+    if slineid:
+        convolutionOperation(image_matrix)
+        Image.fromarray(new_image_matrix).save("./images/"+name+"slineid"+".bmp")
+        Image.fromarray(new_image_matrix).show("New Image")
+'''
+
+
+    
 
 if __name__ == '__main__':
     operation()

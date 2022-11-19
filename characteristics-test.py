@@ -53,5 +53,11 @@ class TestCharacteristics(unittest.TestCase):
 
         self.assertEqual(result, -0.8703703703703703)
 
+    def test_cflaco(self):
+        image_matrix = np.array([[5,4],[1,4]])
+        result = Task2.cflaco_function(image_matrix)
+
+        self.assertEqual(result, 2.191358024691358)
+
 if __name__ == '__main__':
     unittest.main()
