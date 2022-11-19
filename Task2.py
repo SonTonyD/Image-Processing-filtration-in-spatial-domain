@@ -185,6 +185,15 @@ def convolutionOperation(image_matrix, kernel):
             copy_image_matrix[i,j] = weighted_sum/sum_kernel
     return copy_image_matrix
 
+def robertsOperator(image_matrix):
+    width, height = image_matrix.shape[0], image_matrix.shape[1]
+    copy_image_matrix = np.copy(image_matrix)
+    for i in range(1,width-1):
+        for j in range(1,height-1):
+            copy_image_matrix[i,j] = abs(int(image_matrix[i,j]) - int(image_matrix[i+1,j+1])) + abs(int(image_matrix[i,j+1]) - int(image_matrix[i+1,j]))
+    return copy_image_matrix
+
+
 
 
 
@@ -201,7 +210,8 @@ def convolutionOperation(image_matrix, kernel):
 @click.option('--centropy', is_flag=True, help='Compute the entropy of the image')
 @click.option('--hhyper', nargs=2, type=int, help='Histogram modification with hyperbolic final probability density function; 2 parameters: minBrightness maxBrightness')
 @click.option('--slineid', default=-1, help='perform a line identification operation: 0 -> horizontal, 1 -> vertical, 2 -> diagUp, 3 -> diagDown')
-def operation(name, cmean, cvariance, histogram, cstdev, cvarcoi, casyco, cflaco, cvarcoii, centropy, hhyper, slineid) :
+@click.option('--orobertsii', is_flag=True, help='Roberts Operator (edge detection)')
+def operation(name, cmean, cvariance, histogram, cstdev, cvarcoi, casyco, cflaco, cvarcoii, centropy, hhyper, slineid, orobertsii) :
     img = Image.open(name)
     image_matrix = np.array(img)
 
@@ -223,6 +233,8 @@ def operation(name, cmean, cvariance, histogram, cstdev, cvarcoi, casyco, cflaco
         Image.fromarray(new_matrix).show("New Image")
         invokeHistogram(new_matrix, name)
 
+        
+
     if slineid != -1:
         horizontal_kernel = np.array([[-1,-1,-1],[2,2,2],[-1,-1,-1]])
         vertical_kernel = np.array([[-1,2,-1],[-1,2,-1],[-1,2,-1]])
@@ -234,6 +246,11 @@ def operation(name, cmean, cvariance, histogram, cstdev, cvarcoi, casyco, cflaco
         new_image_matrix = convolutionOperation(image_matrix, line_detection_kernels[slineid])
         Image.fromarray(new_image_matrix).save("./images/"+name+"slineid"+str(slineid)+".bmp")
         Image.fromarray(new_image_matrix).show("New Image")
+    
+    if orobertsii:
+        new_matrix = robertsOperator(image_matrix)
+        Image.fromarray(new_matrix).save("./images/"+name+"orobertsii"+".bmp")
+        Image.fromarray(new_matrix).show("New Image")
 
 
 
