@@ -84,10 +84,10 @@ def countPixel(image_matrix):
 
 def replacePixel(image_matrix, lookup_table):
     width, height = image_matrix.shape[0], image_matrix.shape[1]
-    result_matrix = np.copy(image_matrix)
     for i in range(width):
         for j in range(height):
-            for k in range(256):
-                if image_matrix[i,j] == k :
-                    result_matrix[i,j] = round(lookup_table[k])
-    return result_matrix
+            k = 0
+            while image_matrix[i,j] != k :
+                k += 1
+            image_matrix[i,j] = round(lookup_table[k])
+    return image_matrix

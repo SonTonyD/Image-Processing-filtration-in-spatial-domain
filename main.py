@@ -1,7 +1,6 @@
 from PIL import Image
 import numpy as np
 import click
-import re
 
 import module.characteristic as ch
 import module.imageFiltration as ifi
@@ -34,25 +33,29 @@ def operation(name, cmean, cvariance, histogram, cstdev, cvarcoi, casyco, cflaco
     functions = [ch.cmean_function, ch.cvariance_function, ch.cstdev_function, ch.cvarcoi_function, ch.casyco_function, ch.cflaco_function, ch.cvarcoii_function, ch.centropy_function]
     function_flags = [cmean, cvariance, cstdev, cvarcoi, casyco, cflaco, cvarcoii, centropy]
 
-
+    # H0
     if histogram:
         hop.invokeHistogram(image_matrix, name)
 
+    # C1 C2 C3 C4 C5 C6
     for i in range(len(functions)):
         if function_flags[i]: 
             hop.invokeFunction(function_names[i], functions[i], image_matrix)
 
+    # H5
     if len(hhyper) != 0:
         lookup_table = hop.hhyper_function(image_matrix, hhyper)
         new_matrix = hop.replacePixel(image_matrix, lookup_table)
         saveResult(new_matrix,"./result/"+hop.nameParsing(name)+"_hhyper"+".bmp")
         hop.invokeHistogram(new_matrix, hop.nameParsing(name)+"_hhyper")
 
+    # S6
     if slineid != -1:
         line_detection_kernels = [ifi.horizontal_kernel, ifi.vertical_kernel, ifi.diagonalUp_kernel, ifi.diagonalDown_kernel]
         new_image_matrix = ifi.convolutionOperation(image_matrix, line_detection_kernels[slineid])
         saveResult(new_image_matrix, "./result/"+hop.nameParsing(name)+"_slineid_"+str(slineid)+".bmp")
     
+    # O2
     if orobertsii:
         new_matrix = ifi.robertsOperator(image_matrix)
         saveResult(new_matrix, "./result/"+hop.nameParsing(name)+"_orobertsii"+".bmp")
