@@ -1,4 +1,7 @@
 import unittest
+import sys
+sys.path.append('../LAB2')
+
 import module.characteristic as Task2
 import numpy as np
 
