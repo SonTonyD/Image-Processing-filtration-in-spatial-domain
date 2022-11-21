@@ -1,6 +1,5 @@
-from turtle import width
 import unittest
-import Task2
+import module.characteristic as Task2
 import numpy as np
 
 class TestCharacteristics(unittest.TestCase):
