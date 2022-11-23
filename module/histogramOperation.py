@@ -8,8 +8,8 @@ def rgbShape(image_matrix):
     return [reds, greens, blues]
 
 def displayHistogram(image_matrix, name, color):
-    image_matrix = image_matrix.flatten()
-    plt.hist(image_matrix, color = color, bins=256)
+
+    plt.plot(countPixel(image_matrix))
 
     parsedName = nameParsing(name)
     parsedName += color
@@ -86,8 +86,5 @@ def replacePixel(image_matrix, lookup_table):
     width, height = image_matrix.shape[0], image_matrix.shape[1]
     for i in range(width):
         for j in range(height):
-            k = 0
-            while image_matrix[i,j] != k :
-                k += 1
-            image_matrix[i,j] = round(lookup_table[k])
+            image_matrix[i,j] = round(lookup_table[image_matrix[i,j]])
     return image_matrix

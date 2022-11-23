@@ -15,9 +15,10 @@ def convolutionOperation(image_matrix, kernel):
             sum_kernel, weighted_sum = 0, 0
             for k in range(-1,2):
                 for l in range(-1,2):
-                    sum_kernel += abs(kernel[k+1,l+1])
                     weighted_sum += image_matrix[i+k,j+l]*kernel[k+1,l+1]
-            copy_image_matrix[i,j] = weighted_sum/sum_kernel
+            copy_image_matrix[i,j] = abs(weighted_sum)
+            if copy_image_matrix[i,j] > 255:
+                copy_image_matrix[i,j] = 255
     return copy_image_matrix
 
 def robertsOperator(image_matrix):
