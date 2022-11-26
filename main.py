@@ -52,7 +52,10 @@ def operation(name, cmean, cvariance, histogram, cstdev, cvarcoi, casyco, cflaco
     # S6
     if slineid != -1:
         line_detection_kernels = [ifi.horizontal_kernel, ifi.vertical_kernel, ifi.diagonalUp_kernel, ifi.diagonalDown_kernel]
+        #new_image_matrix = ifi.convolutionOperationOptimization(image_matrix)
         new_image_matrix = ifi.convolutionOperation(image_matrix, line_detection_kernels[slineid])
+        
+
         saveResult(new_image_matrix, "./result/"+hop.nameParsing(name)+"_slineid_"+str(slineid)+".bmp")
     
     # O2

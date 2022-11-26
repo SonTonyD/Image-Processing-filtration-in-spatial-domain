@@ -9,7 +9,7 @@ def rgbShape(image_matrix):
 
 def displayHistogram(image_matrix, name, color):
 
-    plt.plot(countPixel(image_matrix))
+    plt.plot(countPixel(image_matrix), color=color)
 
     parsedName = nameParsing(name)
     parsedName += color
